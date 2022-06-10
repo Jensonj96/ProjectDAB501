@@ -1,6 +1,6 @@
 ---
-title: "Project #1"
-author: "w0794547 and w0795089"
+title: "DAB501 Project #1 - Data Visualization"
+author: "Alejandro Rodriguez (w0795089) and Jenson Jacob (w0794547)"
 date: "`r Sys.Date()`"
 output: 
   html_document:
@@ -10,12 +10,10 @@ output:
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-setwd("E:/st clair/Basic stats and eda/project/archive (1)")
+knitr::opts_chunk$set(echo=FALSE, warning=FALSE, message=FALSE)
+setwd("E:/st clair/Basic stats and eda/project/Dataset")
 library(tidyverse)
-library(xtable)
 library(knitr)
-library(plotly)
 library(ggpubr)
 library(ggridges)
 theme_set(theme_pubr())
@@ -25,20 +23,19 @@ Automobile_data <- read_csv('MY2022 Fuel Consumption Ratings.csv')
 
 # Academic Integrity policies statement
 
-
+We acknowledge and abide to the policies of St.clair college and followed the same in this entire project.
+[Academic Integrity at St. Clair College](https://www.stclaircollege.ca/academic-integrity)
 
 
 # R and RStudio environment
 
-RStudio : 2022.02.3+492  
-R : 4.2.0  
-
-# Libraries
- -tidyverse  
- -knitr  
- -plotly  
- -ggpubr  
- -ggridges  
+* RStudio : 2022.02.3+492
+* R : 4.2.0
+* Libraries
+  + tidyverse
+  + knitr
+  + ggpubr
+  + ggridges
 
 # Documentation of the dataset
 
@@ -47,7 +44,6 @@ R : 4.2.0
 The dataset that we chose for developing this project is [2022 Fuel Consumption Ratings](https://www.kaggle.com/datasets/rinichristy/2022-fuel-consumption-ratings) data and the information regarding this data was created by [Open Canada](https://open.canada.ca/data/en/dataset/98f1a129-f628-4ce4-b24d-6f16bf24dd64).
 
 ## Summary information about the data
-
 
 | Variable Name |Description| R Data Type | Statistical Data Type |
 |:---:|:---:|:---:|:---:|:---:|
@@ -58,7 +54,7 @@ The dataset that we chose for developing this project is [2022 Fuel Consumption 
 |`Engine Size`|	Size of the engine in liters	|Numerical|	Continuous Numerical|
 |`Cylinders`|	Number of cylinders	|Numerical|	Discrete Numerical|
 |`Transmission`|	Transmission: A = automatic; AM = automated manual; AS = automatic with select shift; AV = continuously|	Character	|Nominal Categorical|
-|`Fuel type`|	Fuel type: Z – Petrol, D- Diesel, E- Electric.|Character|Nominal Categorical|
+|`Fuel type`|	Fuel type: Z – Premium Gasoline, D- Diesel, E- Electric, X-Regular Gasoline|Character|Nominal Categorical|
 |`Fuel Consumption (City (L/100 km)`|City fuel consumption ratings are shown in liters per 100 kilometers (L/100 km)|	Numerical|Continuous Numerical|
 |`Fuel Consumption (Hwy (L/100 km))`|Highway fuel consumption ratings are shown in liters per 100 kilometers (L/100 km)|Numerical	|Continuous Numerical|
 |`Fuel Consumption (Comb (L/100 km))`|The combined rating (55% city, 45% highway) is shown in L/100 km|Numerical|	Continuous Numerical|
@@ -70,155 +66,165 @@ The dataset that we chose for developing this project is [2022 Fuel Consumption 
 
 
 # 1.Distribution of continuous variables
-## 1.1 Distribution of Fuel consumption in city 
+## 1.1 Distribution of fuel consumption in **city** 
 
-```{r Distribution for fuel consumption in city,echo=FALSE,warning=FALSE,message=FALSE}
-p1 <- ggplot(data = Automobile_data, mapping = aes(x = `Fuel Consumption (City (L/100 km)`)) +
+```{r p1 consumption in city}
+# In the first chart we have represented the distribution of the continuous variable fuel consumption in city and also used two layer,i.e geom_histogram and geom_area. Also for all our chart we have used the theme_pubclean which is in the library "ggpubr".
+
+p1 <- ggplot(Automobile_data, mapping = aes(x = `Fuel Consumption (City (L/100 km)`)) +
           geom_histogram(fill = "white",
                          color = rgb(0, 0.5, 1, alpha = 0.5)) +
           geom_area(stat = "bin", fill = rgb(0, 0.5, 1, alpha = 0.5)) +
           labs(x = "Fuel Consumption (City (L/100 km)",
-               y = "Count",
-               title = 'Distribution for the fuel efficiency in city',
+               y = "Number of cars",
+               title = 'Distribution of fuel efficiency in city',
                caption = "Automobile Dataset found from Kaggle") +
           theme_pubclean()
 p1
-#ggplotly(p1) %>% layout(annotations =list(x=1,y=-0.1,text="Data found from Kaggle"))
+
 ```
 
-## 1.2 Distribution of Fuel consumption in Highway 
+## 1.2 Distribution of fuel consumption in **highway** 
 
-```{r Distribution for fuel consumption in highway,echo=FALSE,warning=FALSE,message=FALSE}
-p2 <- ggplot(data = Automobile_data, mapping = aes(x = `Fuel Consumption(Hwy (L/100 km))`)) +
+```{r p2 consumption in highway}
+# In the second chart we have used the same structure of the previous one, just changed the name of the variable.
+
+
+p2 <- ggplot(Automobile_data, mapping = aes(x = `Fuel Consumption(Hwy (L/100 km))`)) +
           geom_histogram(fill = "white", 
                          color = rgb(0, 0.5, 1, alpha = 0.5)) +
           geom_area(stat = "bin", fill = rgb(0, 0.5, 1, alpha = 0.5)) +
           labs(x = "Fuel Consumption(Hwy (L/100 km))", 
-               y = "Count",
-               title = 'Distribution for the Fuel efficiency in Highway',
+               y = "Number of cars",
+               title = 'Distribution of fuel efficiency in Highway',
                caption = "Automobile Dataset found from Kaggle") +
           theme_pubclean()
 p2
-#ggplotly(p2)
+
 ```
 
 
 # 2. Distribution of categorical variables
 
-## 2.1 Distribution of Vehicle class variable
+## 2.1 Distribution of vehicle class variable
 
-```{r}
+```{r p3 vehicle class}
 
-p3 <-Automobile_data %>% 
-  count(`Vehicle Class`) %>% 
-  arrange(desc(n)) %>% 
-  ggplot(aes(x=n,y=reorder(`Vehicle Class`,n)))+
-  geom_bar(stat="identity",fill = rgb(0, 0.5, 1, alpha = 0.5))+
-  labs( x = "Car count", 
-            y = "Vehicle Class",
-            title = 'Distribution for the Vehicle class category',
-            caption = "Automobile Dataset found from Kaggle")+
+#In this chunk we have used the dataset to create a count of cars belonging to each vehicle class and we have projected this variable in the chart with the help of ggplot.
+
+p3 <- Automobile_data %>% 
+        count(`Vehicle Class`) %>% 
+        arrange(desc(n)) %>% 
+        ggplot(aes(x = n, y = reorder(`Vehicle Class`, n))) +
+          geom_bar(stat="identity",fill = rgb(0, 0.5, 1, alpha = 0.5)) +
+          labs( x = "Number of cars", 
+                y = "Vehicle Class",
+                title = 'Distribution of vehicle class variable',
+                caption = "Automobile Dataset found from Kaggle") +
           theme_pubclean()
 p3
-
-# p3 <- ggplot(data= Automobile_data,mapping = aes(y = `Vehicle Class`)) +
-#       geom_bar(fill = rgb(0, 0.5, 1, alpha = 0.5)) +
-#       labs( x = "Car count", 
-#             y = "Vehicle Class",
-#             title = 'Distribution for the Vehicle class category',
-#             caption = "Automobile Dataset")+
-#           theme_pubclean()
-# p3
-
 ```
 
-## 2.2 Distribution of Transmission variable
+## 2.2 Distribution of vehicle transmission variable
 
-```{r}
+```{r p4 vehicle transmission}
 
-
-p4 <-Automobile_data %>% 
-  count(Transmission) %>% 
-  arrange(desc(n)) %>% 
-  ggplot(aes(x=n,y=reorder(Transmission,n)))+
-  geom_bar(stat="identity",fill = rgb(0, 0.5, 1, alpha = 0.5))+
-  labs( x = "Car count", 
-            y = "Transmission",
-            title = 'Distribution for the Vehicle Transmission category',
-            caption = "Automobile Dataset found from Kaggle")+
-          theme_pubclean()
+#In this chunk we have used the dataset to create a count of cars belonging to each Transmission and we have projected this variable in the chart with the help of ggplot.
+p4 <- Automobile_data %>%
+        count(Transmission) %>% 
+        arrange(desc(n)) %>% 
+        ggplot(aes(x = n, y = reorder(Transmission, n)))+
+          geom_bar(stat="identity", fill = rgb(0, 0.5, 1, alpha = 0.5))+
+          labs( x = "Number of cars", 
+                y = "Transmission",
+                title = 'Distribution of vehicle transmission',
+                caption = "Automobile Dataset found from Kaggle")+
+        theme_pubclean()
 p4
-
-# g2.2 <- ggplot(data = Automobile_data, mapping = aes(y = `body-style`)) +
-#           geom_bar() + 
-#           labs( x = "Car count",
-#                 y = "Body style",
-#                 title = 'Distribution for the body style categorical variable',
-#             caption = "This is the caption")
-# g2.2
 ```
 
+# 3.Relationship between a continuous variable and a categorical variable.
 
-# 3.Relationship between a Continuous variable and a categorical variable.
+```{r p5 continuous-categorical}
+#In this code we have used geom_denisty_ridges layer to project fuel consumption distribution with respect to vehicle class.
 
-```{r}
-g3 <- ggplot( data = Automobile_data, mapping = aes(x = `Fuel Consumption (City (L/100 km)`, y = `Vehicle Class`,fill=`Vehicle Class`)) +
-       geom_density_ridges()+ theme_ridges() +
+p5 <- ggplot(Automobile_data, mapping = aes(x = `Fuel Consumption (City (L/100 km)`, y = `Vehicle Class`,fill=`Vehicle Class`)) +
+       geom_density_ridges() +
        labs(x = "Fuel Consumption (City (L/100 km)", 
             y = "Vehicle Class",
-            title = 'Fuel Consumption (City (L/100 km) VS Vehicle Class',
-            caption = "Automobile Dataset found from Kaggle")+  theme(legend.position = "none")
-g3
+            title = 'Fuel consumption in city by vehicle class',
+            caption = "Automobile Dataset found from Kaggle") +
+       theme_ridges() +
+       theme(legend.position = "none")
+p5
 ```
 
 
 # 4.Relationship between two variables.
 
-## 4.1 Relationship between Fuel consumption in City and Highway(continuous Vs continuous).
+## 4.1 Relationship between fuel consumption in city and highway (continuous Vs continuous).
 
-```{r}
-g4.1 <- ggplot(data = Automobile_data, mapping = aes(x = `Fuel Consumption (City (L/100 km)`,y =`Fuel Consumption(Hwy (L/100 km))`)) + 
+```{r p6 continuous - continuous}
+#In the below code we have simply compared vehicles fuel consumption in city and highway. Also we have added a line(y=x) to understand where does the vehicle performs better.
+p6 <- ggplot(Automobile_data, mapping = aes(x = `Fuel Consumption (City (L/100 km)`,y =`Fuel Consumption(Hwy (L/100 km))`)) + 
           geom_point(color = rgb(0, 0.5, 1, alpha = 0.5)) +
-          labs(x = "Fuel Consumption in City (L/100 km)", 
+          labs(x = "Fuel Consumption in City (L/100 km)",                                   # adding the labels of the axis
                y = "Fuel Consumption in Highway (L/100 km)", 
-               title = 'Relationship between Fuel Consumption in city VS highway',
+               title = 'Relationship between fuel consumption in city and highway',
                caption = "Automobile Dataset found from Kaggle")+
-  geom_abline(intercept =0,slope = 1,color= "red",linetype="dashed")
-g4.1
+          geom_abline(intercept = 0,                                 # adding the line y=x to see where is better the performance
+                      slope = 1, 
+                      color = "red", 
+                      linetype = "dashed") +
+          xlim(0, 40) + ylim(0, 40) +                    # Adjusting the scale of the axis
+          annotate("text", x = 20,                       # Adding a text for the line
+                   y = 20, 
+                   label = "Y = X",
+                   vjust = -0.5, angle = 30,
+                   color = "red")
 
+p6
 ```
 
 
-## 4.2 Relationship between Vehicle class and fuel type variables.(Categorical Vs Categorical)
+## 4.2 Relationship between vehicle class and fuel type variables (categorical Vs categorical).
 ```{r}
-g4.2 <- ggplot(data = Automobile_data) +
+#In this code we are comparing the vehicle class and its fuel type to understand which vehicle class uses what fuel type(Z-Premium Gasoline,E-electric,D-Diesel,X-Regular Gasoline)
+
+p7 <- ggplot(Automobile_data) +
           geom_bar(mapping = aes(x = `Vehicle Class`, fill = `Fuel Type`), position = "fill") +
-          scale_y_continuous(labels = scales::percent)+
-          labs(x = "Vehicle Class",
-               y = "Percentage",
-               title = 'Relationship between Vehicle Class and Fuel Type',
-               caption = "Automobile Dataset found from Kaggle") + theme(legend.position = "right")+           
-  coord_flip()
-g4.2
-#ggplotly()
+          scale_y_continuous(labels = scales::percent) +                       # Changing the scale to percentage
+          labs(x = "Vehicle Class",                                           # adding labels
+               y = " ",
+               title = 'Relationship between vehicle class and fuel type',
+               caption = "Automobile Dataset found from Kaggle") + 
+  scale_fill_discrete(labels=c('Diesel', 'Electric', "Regular Gasoline", "Premium Gasoline" )) +   #Changing the legend of the chart for better understanding.
+          theme(legend.position = "right") +                                  # adjusting the legend position
+          coord_flip()                                                        # rotating the chart to have a better perspective
+p7
 ```
 
 
-# 5 Relationship among 4 variable using faceting.
+# 5. Relationship among 4 variable using faceting.
 
 ```{r}
-g5 <- ggplot(data = Automobile_data,mapping = aes(x =`Fuel Consumption (City (L/100 km)` ,y =`Fuel Consumption(Hwy (L/100 km))`)) +
-        geom_point(aes(color=`Fuel Type`)) + 
-        labs(x = "Fuel consumption in city",
-             y = "Fuel consumption in highway",
-             title = 'Relationship between Fuel consumption in city and highway given by vehicle class and fuel type',caption = "Automobile Dataset found from Kaggle") +  geom_abline(intercept =0,slope = 1,color= "red",linetype="dashed")+
-        facet_wrap(~`Vehicle Class`)+ theme(legend.position = "right")
-g5
+
+p8 <- ggplot(Automobile_data,mapping = aes(x =`Fuel Consumption (City (L/100 km)` ,y =`Fuel Consumption(Hwy (L/100 km))`)) +
+geom_point(aes(color=`Fuel Type`)) +
+scale_color_discrete(labels=c('Diesel', 'Electric', "Regular Gasoline", "Petrol" )) +
+xlim(0, 40) + ylim(0, 40) + # Adjusting the scale of the axis
+labs(x = "Fuel consumption in city",
+y = "Fuel consumption in highway",
+title = 'Relationship between fuel consumption in city and highway',
+subtitle = "given by vehicle class and fuel type",
+caption = "Automobile Dataset found from Kaggle") + geom_abline(intercept = 0,slope = 1,color= "red",linetype="dashed")+
+facet_wrap(~`Vehicle Class`)+
+  theme(strip.text = element_text(size = 7),legend.position = "right")
+
+
+
+p8
 ```
-
-
-
-
 
 
 # References
@@ -227,7 +233,7 @@ We referred the following websites for enhancing our knowledge in this project.
 
  -[R for Data Science](https://r4ds.had.co.nz/)  
  -[ggplot2 - Tidyverse](https://ggplot2.tidyverse.org/)  
- -[The R Graph Galerry](https://r-graph-gallery.com/index.html)  
+ -[The R Graph Galery](https://r-graph-gallery.com/index.html)  
  -[STHDA](http://www.sthda.com/english/)  
 
 
@@ -235,8 +241,9 @@ We referred the following websites for enhancing our knowledge in this project.
 
 **1. In what ways do you think data visualization is important to understanding a data set?**
 
-*“The greatest value of a picture is when it forces us to notice what we never expected to see.”*  
-                                       **John Wilder Tukey**  
+$“The\ greatest\ value\ of\ a\ picture\ is\ when\ it\ forces\ us\ to\ notice\ what\ we\ never\ expected\ to\ see.”$  
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; $John\ Wilder\ Tukey$  
+
 As the author John says, the least expected details comes out when we try to visualize a data. For ex. An excel sheet can only give you numerical details which makes the user very complicated to understand the bigger picture of the data which he/she is trying to analyze.
 
 
@@ -251,8 +258,10 @@ You can view lively the upside and downside trend of any particular data, Visual
 
 **3. What role does your integrity as an analyst play when creating a data visualization for communicating results to others?**
 
-*Far better an approximate answer to the right question, which is often vague, than an exact answer to the wrong question, which can always be made precise.”*  
-                                                       **John Tukey**
+$Far\ better\ an\ approximate\ answer\ to\ the\ right$
+$question,\ which\ is\ often\ vague,\ than\ an\ exact\ answer$
+$to\ the\ wrong\ question,\ which\ can\ always\ be\ made\ precise.”$  
+&emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; &emsp; $John\ Wilder\ Tukey$  
 
  - Do not transform or alter the representation of the data in order to maximize some aspect that we could consider is most important, we could be biased for some reason, therefore we consider that the best way to show data is showing it in the most natural way as possible.
  - Also, we consider that it is really important to state in some part of the chart the source of your data, and by this way we are showing that anybody can get the same data and obtain the same chart, so there is no mystery related with the insights we got it from the graph.
@@ -260,15 +269,4 @@ You can view lively the upside and downside trend of any particular data, Visual
 **How many variables do you think you can successfully represent in a visualization? What happens when you exceed this number?**
 
 Data visualization is a tool used to represent the structure and relationships among variables so as we increase the number of variables we are increasing the complexity of those structures and relationships. We think with more than 5 variables, it is really difficult to keep in mind all the possible relationships among those variables in order to get an idea of the message that the analyst is trying to project with his/her visualization. And the reason is that, the human mind can be really acute to drill a problem and find a solution, but when it's time to do multitasking with several data, human fails at some extent and this is the reason why we need computers.
-
-
-
-
-
-
-
-
-
-
-
 
